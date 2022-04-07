@@ -74,3 +74,24 @@ services:
       - --name=app
       - --playground
       - --indexer=http://subql-node:3000
+
+  insights:
+    image: centrifuge-insights
+    build:
+      context: centrifuge-insights
+      dockerfile: Dockerfile
+      target: install
+    volumes:
+      - ./centrifuge-insights:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - 8010:3000
+    environment:
+      # make hot-reloading work.
+      - CHOKIDAR_USEPOLLING=true # maybe obsolete?
+      - WDS_SOCKET_PORT=0
+      # run node in development mode
+      - NODE_ENV=development
+      # set ops env to local
+      - REACT_APP_OPS_ENV=local
+    command: yarn start
