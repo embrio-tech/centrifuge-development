@@ -27,6 +27,8 @@ _Figure: Architectural diagram of the development environment._
 
     $ docker-compose up --build
 
+If you run this for the first time, it might take a while. :hourglass_flowing_sand::hourglass_flowing_sand: Get a coffee, sit back, and relax! :coffee: :palm_tree: 
+
 ### Scrap
 
     $ docker-compose down -v

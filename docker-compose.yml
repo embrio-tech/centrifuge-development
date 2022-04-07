@@ -75,7 +75,7 @@ services:
       - --playground
       - --indexer=http://subql-node:3000
 
-  insights:
+  insights-client:
     image: centrifuge-insights
     build:
       context: centrifuge-insights
