@@ -8,6 +8,10 @@ A development repository to combine and manage all necessary services to easily 
 
 ## Getting Started
 
+### Clone
+
+    $ git clone --recurse-submodules git@github.com:embrio-tech/centrifuge-development.git
+
 ### Prerequisites
 
 - docker
