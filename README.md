@@ -6,6 +6,9 @@
 
 A development repository to combine and manage all necessary services to easily develop the centrifuge insights dashdoard.
 
+![centrifuge-architecture](https://user-images.githubusercontent.com/16650977/162206089-a1fac1d5-948f-41aa-badc-6e36ae08482b.png)
+_Figure: Architectural diagram of the development environment._
+
 ## Getting Started
 
 ### Prerequisites
