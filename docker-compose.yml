@@ -1,0 +1,76 @@
+volumes:
+  db:
+
+services:
+  subql-installer:
+    image: node:16-alpine
+    volumes:
+      - ./centrifuge-subql:/app
+    working_dir: /app
+    command:
+      - sh
+      - -c
+      - yarn install --frozen-lockfile && yarn codegen && yarn build
+  
+  subql-db:
+    image: postgres:12-alpine
+    ports:
+      - 5432:5432
+    volumes:
+      - db:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: postgres
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  subql-node:
+    image: onfinality/subql-node:v0.27.2-0
+    depends_on:
+      subql-db:
+        condition: service_healthy
+      subql-installer:
+        condition: service_completed_successfully
+    restart: always
+    environment:
+      DB_USER: postgres
+      DB_PASS: postgres
+      DB_DATABASE: postgres
+      DB_HOST: subql-db
+      DB_PORT: 5432
+    volumes:
+      - ./centrifuge-subql:/app
+    command:
+      - -f=/app
+      - --db-schema=app
+      - --batch-size=1000
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://subql-node:3000/ready']
+      interval: 3s
+      timeout: 5s
+      retries: 10
+
+  subql-query:
+    image: onfinality/subql-query:v0.10.1-0
+    ports:
+      - 3000:3000
+    depends_on:
+      subql-db:
+        condition: service_healthy
+      subql-node:
+        condition: service_healthy
+      subql-installer:
+        condition: service_completed_successfully
+    restart: always
+    environment:
+      DB_USER: postgres
+      DB_PASS: postgres
+      DB_DATABASE: postgres
+      DB_HOST: subql-db
+      DB_PORT: 5432
+    command:
+      - --name=app
+      - --playground
+      - --indexer=http://subql-node:3000
