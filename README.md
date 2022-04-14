@@ -27,7 +27,17 @@ _Figure: Architectural diagram of the development environment._
 
     $ docker-compose up --build
 
-If you run this for the first time, it might take a while. :hourglass_flowing_sand: Get a coffee, sit back, and relax! :coffee: :palm_tree: 
+If you run this for the first time, it might take a while. :hourglass_flowing_sand: Get a coffee, sit back, and relax! :coffee: :palm_tree:
+
+### Access
+
+#### Centrifuge insights
+
+The frontend can be accessed under the following link: [http://localhost:8010](http://localhost:8010/)
+
+#### Centrifuge subql
+
+The subql query playground is available here: [http://localhost:3000](http://localhost:3000/)
 
 ### Scrap
 
