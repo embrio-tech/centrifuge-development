@@ -86,7 +86,7 @@ services:
       - ./centrifuge-insights:/usr/src/app
       - /usr/src/app/node_modules
     ports:
-      - 8010:3000
+      - 8010:8010
     environment:
       # make hot-reloading work.
       - CHOKIDAR_USEPOLLING=true # maybe obsolete?
@@ -95,4 +95,5 @@ services:
       - NODE_ENV=development
       # set ops env to local
       - REACT_APP_OPS_ENV=local
+      - PORT=8010
     command: yarn start
