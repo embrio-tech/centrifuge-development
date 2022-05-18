@@ -4,6 +4,7 @@ volumes:
 services:
   subql-installer:
     image: node:16-alpine
+    profiles: ['backend']
     volumes:
       - ./centrifuge-subql:/app
     working_dir: /app
@@ -14,6 +15,7 @@ services:
   
   subql-db:
     image: postgres:12-alpine
+    profiles: ['backend']
     ports:
       - 5432:5432
     volumes:
@@ -28,6 +30,7 @@ services:
 
   subql-node:
     image: onfinality/subql-node:latest
+    profiles: ['backend']
     depends_on:
       subql-db:
         condition: service_healthy
@@ -55,6 +58,7 @@ services:
 
   subql-query:
     image: onfinality/subql-query:latest
+    profiles: ['backend']
     ports:
       - 3000:3000
     depends_on:
@@ -78,6 +82,7 @@ services:
 
   insights-client:
     image: centrifuge-insights
+    profiles: ['frontend']
     build:
       context: centrifuge-insights
       dockerfile: Dockerfile

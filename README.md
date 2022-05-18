@@ -25,7 +25,13 @@ _Figure: Architectural diagram of the development environment._
 
 ### Start
 
-    $ docker-compose up --build
+Frontend and backend can be started individually by using:
+
+    $ docker-compose --profile backend up --build
+
+or / and
+
+    $ docker-compose --profile frontend up --build
 
 If you run this for the first time, it might take a while. :hourglass_flowing_sand: Get a coffee, sit back, and relax! :coffee: :palm_tree:
 
