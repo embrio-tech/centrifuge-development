@@ -45,7 +45,7 @@ services:
       - dbadmin-data:/var/lib/pgadmin
 
   subql-node:
-    image: onfinality/subql-node:latest
+    image: onfinality/subql-node:v1.9.1
     profiles: ['backend']
     depends_on:
       subql-db:
@@ -64,7 +64,7 @@ services:
     command:
       - -f=/app
       - --db-schema=app
-      - --batch-size=1000
+      #- --batch-size=1000
       - --disable-historical=true
       #- --debug
     healthcheck:
