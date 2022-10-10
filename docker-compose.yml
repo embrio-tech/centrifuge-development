@@ -15,7 +15,9 @@ services:
       - yarn codegen && yarn build
   
   subql-db:
-    image: postgres:12-alpine
+    build:
+      context: ./centrifuge-subql/
+      dockerfile: docker/pg-Dockerfile
     profiles: ['backend']
     ports:
       - 5432:5432
@@ -31,7 +33,7 @@ services:
 
   subql-db-admin:
     image: dpage/pgadmin4
-    profiles: ['backend']
+    profiles: ['disabled']
     depends_on:
       subql-db:
         condition: service_healthy
@@ -45,7 +47,7 @@ services:
       - dbadmin-data:/var/lib/pgadmin
 
   subql-node:
-    image: onfinality/subql-node:v1.9.1
+    image: onfinality/subql-node:v1.10.2
     profiles: ['backend']
     depends_on:
       subql-db:
@@ -74,7 +76,7 @@ services:
       retries: 10
 
   subql-query:
-    image: onfinality/subql-query:latest
+    image: onfinality/subql-query:v1.6.0
     profiles: ['backend']
     ports:
       - 3000:3000
