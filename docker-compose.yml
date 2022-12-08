@@ -2,10 +2,11 @@ volumes:
   db:
   dbadmin-data:
 
+
 services:
   subql-installer:
     image: node:16-alpine
-    profiles: ['backend']
+    profiles: [ 'backend' ]
     volumes:
       - ./centrifuge-subql:/app
     working_dir: /app
@@ -13,12 +14,12 @@ services:
       - sh
       - -c
       - yarn codegen && yarn build
-  
+
   subql-db:
     build:
       context: ./centrifuge-subql/
       dockerfile: docker/pg-Dockerfile
-    profiles: ['backend']
+    profiles: [ 'backend' ]
     ports:
       - 5432:5432
     volumes:
@@ -26,14 +27,14 @@ services:
     environment:
       POSTGRES_PASSWORD: ${DB_PASS}
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      test: [ 'CMD-SHELL', 'pg_isready -U postgres' ]
       interval: 5s
       timeout: 5s
       retries: 5
 
   subql-db-admin:
     image: dpage/pgadmin4
-    profiles: ['disabled']
+    profiles: [ 'disabled' ]
     depends_on:
       subql-db:
         condition: service_healthy
@@ -47,8 +48,8 @@ services:
       - dbadmin-data:/var/lib/pgadmin
 
   subql-node:
-    image: onfinality/subql-node:v1.10.2
-    profiles: ['backend']
+    image: onfinality/subql-node:v1.16.0
+    profiles: [ 'backend' ]
     depends_on:
       subql-db:
         condition: service_healthy
@@ -70,14 +71,14 @@ services:
       - --disable-historical=true
       #- --debug
     healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://subql-node:3000/ready']
+      test: [ 'CMD', 'curl', '-f', 'http://subql-node:3000/ready' ]
       interval: 3s
       timeout: 5s
       retries: 10
 
   subql-query:
-    image: onfinality/subql-query:v1.6.0
-    profiles: ['backend']
+    image: onfinality/subql-query:v1.9.1
+    profiles: [ 'backend' ]
     ports:
       - 3000:3000
     depends_on:
@@ -101,7 +102,7 @@ services:
 
   insights-client:
     image: centrifuge-insights
-    profiles: ['frontend']
+    profiles: [ 'frontend' ]
     build:
       context: centrifuge-insights
       dockerfile: Dockerfile
