@@ -6,3 +6,7 @@
 	path = centrifuge-insights
 	url = git@github.com:embrio-tech/centrifuge-insights.git
 	branch = main
+[submodule "centrifuge-influx"]
+	path = centrifuge-influx
+	url = git@github.com:embrio-tech/centrifuge-influx.git
+	branch = main
