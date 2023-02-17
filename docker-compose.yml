@@ -1,12 +1,14 @@
 volumes:
-  db:
-  dbadmin-data:
+  subqlDb:
+  subqlDbAdmin:
+  blenderDb:
 
 
 services:
   subql-installer:
     image: node:16-alpine
-    profiles: [ 'backend' ]
+    profiles:
+      - subql
     volumes:
       - ./centrifuge-subql:/app
     working_dir: /app
@@ -19,13 +21,16 @@ services:
     build:
       context: ./centrifuge-subql/
       dockerfile: docker/pg-Dockerfile
-    profiles: [ 'backend' ]
+    profiles:
+      - subql
     ports:
       - 5432:5432
     volumes:
-      - db:/var/lib/postgresql/data
+      - subqlDb:/var/lib/postgresql/data
     environment:
-      POSTGRES_PASSWORD: ${DB_PASS}
+      POSTGRES_DB: subql
+      POSTGRES_USER: ${SUBQL_DB_USER}
+      POSTGRES_PASSWORD: ${SUBQL_DB_PASS}
     healthcheck:
       test: [ 'CMD-SHELL', 'pg_isready -U postgres' ]
       interval: 5s
@@ -45,11 +50,12 @@ services:
     ports:
       - 8011:80
     volumes:
-      - dbadmin-data:/var/lib/pgadmin
+      - subqlDbAdmin:/var/lib/pgadmin
 
   subql-node:
-    image: onfinality/subql-node:v1.16.0
-    profiles: [ 'backend' ]
+    image: onfinality/subql-node
+    profiles:
+      - subql
     depends_on:
       subql-db:
         condition: service_healthy
@@ -57,11 +63,11 @@ services:
         condition: service_completed_successfully
     restart: always
     environment:
-      DB_USER: ${DB_USER}
-      DB_PASS: ${DB_PASS}
-      DB_DATABASE: ${DB_DATABASE}
-      DB_HOST: ${DB_HOST}
-      DB_PORT: ${DB_PORT}
+      DB_USER: ${SUBQL_DB_USER}
+      DB_PASS: ${SUBQL_DB_PASS}
+      DB_DATABASE: subql
+      DB_HOST: subql-db
+      DB_PORT: 5432
     volumes:
       - ./centrifuge-subql:/app
     command:
@@ -77,8 +83,9 @@ services:
       retries: 10
 
   subql-query:
-    image: onfinality/subql-query:v1.9.1
-    profiles: [ 'backend' ]
+    image: onfinality/subql-query
+    profiles:
+      - subql
     ports:
       - 3000:3000
     depends_on:
@@ -90,11 +97,11 @@ services:
         condition: service_completed_successfully
     restart: always
     environment:
-      DB_USER: ${DB_USER}
-      DB_PASS: ${DB_PASS}
-      DB_DATABASE: ${DB_DATABASE}
-      DB_HOST: ${DB_HOST}
-      DB_PORT: ${DB_PORT}
+      DB_USER: ${SUBQL_DB_USER}
+      DB_PASS: ${SUBQL_DB_PASS}
+      DB_DATABASE: subql
+      DB_HOST: subql-sb
+      DB_PORT: 5432
     command:
       - --name=app
       - --playground
@@ -102,7 +109,8 @@ services:
 
   insights-client:
     image: centrifuge-insights
-    profiles: [ 'frontend' ]
+    profiles:
+      - insights
     build:
       context: centrifuge-insights
       dockerfile: Dockerfile
@@ -122,3 +130,16 @@ services:
       - REACT_APP_OPS_ENV=local
       - PORT=8010
     command: yarn start
+
+  blender-db:
+    image: mongo
+    profiles:
+      - blender
+    volumes:
+      - blenderDb:/data/db
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${BLENDER_DB_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${BLENDER_DB_PASS}
+      MONGO_INITDB_DATABASE: blender
