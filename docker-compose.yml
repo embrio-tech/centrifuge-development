@@ -100,7 +100,7 @@ services:
       DB_USER: ${SUBQL_DB_USER}
       DB_PASS: ${SUBQL_DB_PASS}
       DB_DATABASE: subql
-      DB_HOST: subql-sb
+      DB_HOST: subql-db
       DB_PORT: 5432
     command:
       - --name=app
