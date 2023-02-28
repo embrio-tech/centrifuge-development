@@ -16,6 +16,19 @@ services:
       - sh
       - -c
       - yarn codegen && yarn build
+  
+  subql-proj:
+    image: mikefarah/yq
+    profiles:
+      - subql
+    volumes:
+      - ./centrifuge-subql:/app
+    working_dir: /app
+    entrypoint: []
+    command: 
+      - sh
+      - -c
+      - 'yq ". *= load(\"chains/development-embrio.yaml\")" chains/base.yaml > project.yaml'
 
   subql-db:
     build:
@@ -61,6 +74,8 @@ services:
         condition: service_healthy
       subql-installer:
         condition: service_completed_successfully
+      subql-proj:
+        condition: service_completed_successfully
     restart: always
     environment:
       DB_USER: ${SUBQL_DB_USER}
@@ -94,6 +109,8 @@ services:
       subql-node:
         condition: service_healthy
       subql-installer:
+        condition: service_completed_successfully
+      subql-proj:
         condition: service_completed_successfully
     restart: always
     environment:

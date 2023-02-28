@@ -25,13 +25,17 @@ _Figure: Architectural diagram of the development environment._
 
 ### Start
 
-Frontend and backend can be started individually by using:
+Services can be started individually. the following services are available: `subql`, `insights`, `blender`. These can be started with the following command
 
-    $ docker-compose --profile backend up --build
+    $ docker-compose --profile <service> up --build
 
-or / and
+such as
 
-    $ docker-compose --profile frontend up --build
+    $ docker-compose --profile subql up --build
+
+or for multiple services:
+
+    $ docker-compose --profile subql --profile insights up --build
 
 If you run this for the first time, it might take a while. :hourglass_flowing_sand: Get a coffee, sit back, and relax! :coffee: :palm_tree:
 
@@ -48,7 +52,6 @@ The subql query playground is available here: [http://localhost:3000](http://loc
 ### Scrap
 
     $ docker-compose down -v
-
 
 ## Contact
 
