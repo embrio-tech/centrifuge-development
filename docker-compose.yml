@@ -1,6 +1,5 @@
 volumes:
   subqlDb:
-  subqlDbAdmin:
   blenderDb:
 
 
@@ -49,21 +48,6 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
-
-  subql-db-admin:
-    image: dpage/pgadmin4
-    profiles: [ 'disabled' ]
-    depends_on:
-      subql-db:
-        condition: service_healthy
-    environment:
-      - PGADMIN_DISABLE_POSTFIX=true
-      - PGADMIN_DEFAULT_EMAIL=admin@e.mail
-      - PGADMIN_DEFAULT_PASSWORD=admin
-    ports:
-      - 8011:80
-    volumes:
-      - subqlDbAdmin:/var/lib/pgadmin
 
   subql-node:
     image: onfinality/subql-node
