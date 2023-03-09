@@ -1,7 +1,8 @@
+version: '3'
+
 volumes:
   subqlDb:
   blenderDb:
-
 
 services:
   subql-installer:
@@ -15,7 +16,7 @@ services:
       - sh
       - -c
       - yarn codegen && yarn build
-  
+
   subql-proj:
     image: mikefarah/yq
     profiles:
@@ -24,7 +25,7 @@ services:
       - ./centrifuge-subql:/app
     working_dir: /app
     entrypoint: []
-    command: 
+    command:
       - sh
       - -c
       - 'yq ". *= load(\"chains/development-embrio.yaml\")" chains/base.yaml > project.yaml'
@@ -44,7 +45,7 @@ services:
       POSTGRES_USER: ${SUBQL_DB_USER}
       POSTGRES_PASSWORD: ${SUBQL_DB_PASS}
     healthcheck:
-      test: [ 'CMD-SHELL', 'pg_isready -U postgres' ]
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
       interval: 5s
       timeout: 5s
       retries: 5
@@ -76,7 +77,7 @@ services:
       - --disable-historical=true
       #- --debug
     healthcheck:
-      test: [ 'CMD', 'curl', '-f', 'http://subql-node:3000/ready' ]
+      test: ['CMD', 'curl', '-f', 'http://subql-node:3000/ready']
       interval: 3s
       timeout: 5s
       retries: 10
@@ -163,4 +164,5 @@ services:
       - blender-db
     env_file:
       - ./centrifuge-outflux/.env
+    tty: true # makes the service logs colorful
     command: yarn develop:debug
