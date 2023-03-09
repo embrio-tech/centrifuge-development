@@ -144,3 +144,23 @@ services:
       MONGO_INITDB_ROOT_USERNAME: ${BLENDER_DB_USER}
       MONGO_INITDB_ROOT_PASSWORD: ${BLENDER_DB_PASS}
       MONGO_INITDB_DATABASE: blender
+
+  blender-outflux:
+    image: centrifuge-outflux
+    profiles:
+      - blender
+    build:
+      context: ./centrifuge-outflux
+      dockerfile: Dockerfile
+      target: install
+    volumes:
+      - ./centrifuge-outflux:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - 5010:5000
+      - 9229:9229
+    depends_on:
+      - blender-db
+    env_file:
+      - ./centrifuge-outflux/.env
+    command: yarn develop:debug
