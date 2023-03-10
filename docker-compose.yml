@@ -162,7 +162,8 @@ services:
       - 9229:9229
     depends_on:
       - blender-db
-    env_file:
-      - ./centrifuge-outflux/.env
+    environment:
+      DB_URI: "mongodb://${BLENDER_DB_USER}:${BLENDER_DB_PASS}@blender-db:27017/blender?authSource=admin"
+      LOGGER_LEVEL: debug
     tty: true # makes the service logs colorful
     command: yarn develop:debug
