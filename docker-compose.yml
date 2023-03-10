@@ -146,6 +146,28 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: ${BLENDER_DB_PASS}
       MONGO_INITDB_DATABASE: blender
 
+  blender-influx:
+    image: centrifuge-influx
+    profiles:
+      - blender
+    build:
+      context: ./centrifuge-influx
+      dockerfile: Dockerfile
+      target: install
+    volumes:
+      - ./centrifuge-influx:/usr/src/app
+      - /usr/src/app/node_modules
+    ports: []
+    #  - 9229:9229
+    depends_on:
+      - blender-db
+    environment:
+      DB_URI: "mongodb://${BLENDER_DB_USER}:${BLENDER_DB_PASS}@blender-db:27017/blender?authSource=admin"
+      POOL_ID: "3152960027"
+    tty: true # makes the service logs colorful
+    command: yarn develop
+
+
   blender-outflux:
     image: centrifuge-outflux
     profiles:
