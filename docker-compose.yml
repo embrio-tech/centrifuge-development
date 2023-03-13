@@ -162,11 +162,10 @@ services:
     depends_on:
       - blender-db
     environment:
-      DB_URI: "mongodb://${BLENDER_DB_USER}:${BLENDER_DB_PASS}@blender-db:27017/blender?authSource=admin"
-      POOL_ID: "3152960027"
+      DB_URI: 'mongodb://${BLENDER_DB_USER}:${BLENDER_DB_PASS}@blender-db:27017/blender?authSource=admin'
+      POOL_ID: '3152960027'
     tty: true # makes the service logs colorful
     command: yarn develop
-
 
   blender-outflux:
     image: centrifuge-outflux
@@ -185,7 +184,7 @@ services:
     depends_on:
       - blender-db
     environment:
-      DB_URI: "mongodb://${BLENDER_DB_USER}:${BLENDER_DB_PASS}@blender-db:27017/blender?authSource=admin"
+      DB_URI: 'mongodb://${BLENDER_DB_USER}:${BLENDER_DB_PASS}@blender-db:27017/blender?authSource=admin'
       LOGGER_LEVEL: debug
     tty: true # makes the service logs colorful
     command: yarn develop:debug
