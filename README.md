@@ -49,6 +49,10 @@ The frontend can be accessed under the following link: [http://localhost:8010](h
 
 The subql query playground is available here: [http://localhost:3000](http://localhost:3000/)
 
+#### Blender Outflux
+
+The `blender-outflux` GraphQL is available at [http://localhost:5010/graphql](http://localhost:5010/graphql?query=%7B%0A++loans+%7B%0A++++_id%0A++++createdAt%0A++++updatedAt%0A++++sources+%7B%0A++++++_id%0A++++++source%0A++++++objectId%0A++++++lastFetchedAt%0A++++++dataFrame+%7B%0A++++++++data%0A++++++++createdAt%0A++++++++updatedAt%0A++++++++_id%0A++++++++source%0A++++++%7D%0A++++%7D%0A++%7D%0A%7D#)
+
 ### Scrap
 
     $ docker-compose down -v
