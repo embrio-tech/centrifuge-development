@@ -186,5 +186,6 @@ services:
     environment:
       DB_URI: 'mongodb://${BLENDER_DB_USER}:${BLENDER_DB_PASS}@blender-db:27017/blender?authSource=admin'
       LOGGER_LEVEL: debug
+      API_KEY: supersecret
     tty: true # makes the service logs colorful
     command: yarn develop:debug
