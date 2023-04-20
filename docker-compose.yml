@@ -16,6 +16,9 @@ services:
       - sh
       - -c
       - yarn codegen && yarn build
+    depends_on:
+      subql-proj:
+        condition: service_completed_successfully
 
   subql-proj:
     image: mikefarah/yq
@@ -51,7 +54,7 @@ services:
       retries: 5
 
   subql-node:
-    image: onfinality/subql-node:v1.18.0
+    image: onfinality/subql-node:v1.21.1
     profiles:
       - subql
     depends_on:
@@ -163,7 +166,7 @@ services:
       - blender-db
     environment:
       DB_URI: 'mongodb://${BLENDER_DB_USER}:${BLENDER_DB_PASS}@blender-db:27017/blender?authSource=admin'
-      POOL_ID: '3152960027'
+      POOL_ID: '3317493590'
     tty: true # makes the service logs colorful
     command: yarn develop
 
