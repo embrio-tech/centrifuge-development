@@ -166,7 +166,9 @@ services:
       - blender-db
     environment:
       DB_URI: 'mongodb://${BLENDER_DB_USER}:${BLENDER_DB_PASS}@blender-db:27017/blender?authSource=admin'
-      POOL_ID: '3317493590'
+      POOL_ID: ${POOL_ID}
+      PROXY_KEYRING_URI: ${PROXY_KEYRING_URI}
+      OPERATOR_ADDRESS: ${OPERATOR_ADDRESS}
     tty: true # makes the service logs colorful
     command: yarn develop
 
