@@ -6,7 +6,7 @@ volumes:
 
 services:
   subql-installer:
-    image: node:16-alpine
+    image: node:18-alpine
     profiles:
       - subql
     volumes:
@@ -54,7 +54,7 @@ services:
       retries: 5
 
   subql-node:
-    image: onfinality/subql-node:v1.21.1
+    image: onfinality/subql-node:latest
     profiles:
       - subql
     depends_on:
