@@ -31,7 +31,7 @@ services:
     command:
       - sh
       - -c
-      - 'yq ". *= load(\"chains/development-embrio.yaml\")" chains/base.yaml > project.yaml'
+      - 'yq ". *=d load(\"chains/demo.yaml\")" chains/base.yaml > project.yaml'
 
   subql-db:
     build:
