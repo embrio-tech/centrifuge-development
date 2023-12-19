@@ -5,6 +5,20 @@ volumes:
   blenderDb:
 
 services:
+
+  subql-proj:
+    image: mikefarah/yq
+    profiles:
+      - subql
+    volumes:
+      - ./centrifuge-subql:/app
+    working_dir: /app
+    entrypoint: []
+    command:
+      - sh
+      - -c
+      - 'yq ". *=d load(\"chains-cfg/development-embrio.yaml\")" chains-cfg/base.yaml > project-centrifuge.yaml && yq ". *=d load(\"chains-evm/development-embrio.yaml\")" chains-evm/base.yaml > project-ethereum.yaml'
+
   subql-installer:
     image: node:18-alpine
     profiles:
@@ -15,25 +29,10 @@ services:
     command:
       - sh
       - -c
-      - yarn codegen && yarn build
+      - 'yarn install && yarn codegen && yarn build:dev'
     depends_on:
       subql-proj:
         condition: service_completed_successfully
-
-  subql-proj:
-    image: mikefarah/yq
-    profiles:
-      - subql
-    volumes:
-      - ./centrifuge-subql:/app
-    environment:
-      ETH_NODE_API_KEY: ${ETH_NODE_API_KEY}
-    working_dir: /app
-    entrypoint: []
-    command:
-      - sh
-      - -c
-      - 'yq ". *=d load(\"chains-cfg/development-embrio.yaml\")" chains-cfg/base.yaml > project-centrifuge.yaml && yq ". *=d load(\"chains-evm/development-embrio.yaml\")" chains-evm/base.yaml > project-ethereum.yaml && ( echo "cat <<EOF" ; cat project-ethereum.yaml ; echo EOF ) | sh | tee project-ethereum.yaml'
 
   subql-db:
     build:
@@ -113,8 +112,8 @@ services:
       - --multi-chain
       - --db-schema=app
       - --disable-historical=true
-      - --workers=2
-      - --batch-size=30
+      #- --workers=1
+      - --batch-size=100
       #- --skipTransactions=true
       #- --debug
     healthcheck:
@@ -148,7 +147,7 @@ services:
     command:
       - --name=app
       - --playground
-      - --indexer=http://subql-node:3000
+      - --indexer=http://subql-node-cfg:3000
 
   insights-client:
     image: centrifuge-insights
