@@ -17,7 +17,7 @@ services:
     command:
       - sh
       - -c
-      - 'yq ". *=d load(\"chains-cfg/development-embrio.yaml\")" chains-cfg/base.yaml > project-centrifuge.yaml && yq ". *=d load(\"chains-eth/development-embrio.yaml\")" chains-eth/base.yaml > project-ethereum.yaml && yq ". *=d load(\"chains-base/development-embrio.yaml\")" chains-base/base.yaml > project-coinbase.yaml'
+      - 'yq ". *=d load(\"chains-cfg/${CHAIN_ID}.yaml\")" chains-cfg/_root.yaml > project-centrifuge.yaml && yq ". *=d load(\"chains-evm/eth/${CHAIN_ID}.yaml\")" chains-evm/_root.yaml > project-ethereum.yaml && yq ". *=d load(\"chains-evm/base/$CHAIN_ID.yaml\")" chains-evm/_root.yaml > project-base.yaml'
 
   subql-installer:
     image: node:18-alpine
@@ -143,7 +143,7 @@ services:
     volumes:
       - ./centrifuge-subql:/app
     command:
-      - -f=/app/project-coinbase.yaml
+      - -f=/app/project-base.yaml
       - --multi-chain
       - --db-schema=app
       - --disable-historical=true
