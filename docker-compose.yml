@@ -17,7 +17,7 @@ services:
     command:
       - sh
       - -c
-      - 'yq ". *=d load(\"chains-cfg/${CHAIN_ID}.yaml\")" chains-cfg/_root.yaml > project-centrifuge.yaml && yq ". *=d load(\"chains-evm/eth/${CHAIN_ID}.yaml\")" chains-evm/_root.yaml > project-ethereum.yaml && yq ". *=d load(\"chains-evm/base/$CHAIN_ID.yaml\")" chains-evm/_root.yaml > project-base.yaml'
+      - 'yq ". *=d load(\"chains-cfg/${CHAIN_ID}.yaml\")" chains-cfg/_root.yaml > project-centrifuge.yaml && yq ". *=d load(\"chains-evm/eth/${CHAIN_ID}.yaml\")" chains-evm/_root.yaml > project-ethereum.yaml && yq ". *=d load(\"chains-evm/base/$CHAIN_ID.yaml\")" chains-evm/_root.yaml > project-base.yaml && yq ". *=d load(\"chains-evm/celo/$CHAIN_ID.yaml\")" chains-evm/_root.yaml > project-celo.yaml'
 
   subql-installer:
     image: node:18-alpine
@@ -114,7 +114,7 @@ services:
       - --disable-historical=true
       #- --workers=1
       - --batch-size=30
-      #- --skipTransactions=true
+      - --skipTransactions=true
       #- --debug
     healthcheck:
       test: ['CMD', 'curl', '-f', 'http://subql-node-eth:3000/ready']
@@ -149,10 +149,45 @@ services:
       - --disable-historical=true
       #- --workers=1
       - --batch-size=30
-      #- --skipTransactions=true
+      - --skipTransactions=true
       #- --debug
     healthcheck:
       test: ['CMD', 'curl', '-f', 'http://subql-node-base:3000/ready']
+      interval: 3s
+      timeout: 5s
+      retries: 10
+
+  subql-node-celo:
+    image: onfinality/subql-node-ethereum:latest
+    profiles:
+      - subql
+    depends_on:
+      subql-db:
+        condition: service_healthy
+      subql-installer:
+        condition: service_completed_successfully
+      subql-proj:
+        condition: service_completed_successfully
+    restart: always
+    environment:
+      DB_USER: ${SUBQL_DB_USER}
+      DB_PASS: ${SUBQL_DB_PASS}
+      DB_DATABASE: postgres
+      DB_HOST: subql-db
+      DB_PORT: 5432
+    volumes:
+      - ./centrifuge-subql:/app
+    command:
+      - -f=/app/project-celo.yaml
+      - --multi-chain
+      - --db-schema=app
+      - --disable-historical=true
+      #- --workers=1
+      - --batch-size=30
+      - --skipTransactions=true
+      #- --debug
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://subql-node-celo:3000/ready']
       interval: 3s
       timeout: 5s
       retries: 10
