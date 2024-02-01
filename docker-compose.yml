@@ -10,6 +10,7 @@ services:
     image: mikefarah/yq
     profiles:
       - subql
+      - subql-cfg
     volumes:
       - ./centrifuge-subql:/app
     working_dir: /app
@@ -23,6 +24,7 @@ services:
     image: node:18-alpine
     profiles:
       - subql
+      - subql-cfg
     volumes:
       - ./centrifuge-subql:/app
     working_dir: /app
@@ -40,6 +42,7 @@ services:
       dockerfile: docker/pg-Dockerfile
     profiles:
       - subql
+      - subql-cfg
     ports:
       - 5432:5432
     volumes:
@@ -58,6 +61,7 @@ services:
     image: onfinality/subql-node:latest
     profiles:
       - subql
+      - subql-cfg
     depends_on:
       subql-db:
         condition: service_healthy
@@ -196,6 +200,7 @@ services:
     image: onfinality/subql-query
     profiles:
       - subql
+      - subql-cfg
     ports:
       - 3000:3000
     depends_on:
