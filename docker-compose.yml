@@ -5,9 +5,8 @@ volumes:
   blenderDb:
 
 services:
-
-  subql-proj:
-    image: mikefarah/yq
+  subql-builder:
+    image: node:18-alpine
     profiles:
       - subql
       - subql-cfg
@@ -18,9 +17,9 @@ services:
     command:
       - sh
       - -c
-      - 'yq ". *=d load(\"chains-cfg/${CHAIN_ID}.yaml\")" chains-cfg/_root.yaml > project-centrifuge.yaml && yq ". *=d load(\"chains-evm/eth/${CHAIN_ID}.yaml\")" chains-evm/_root.yaml > project-ethereum.yaml && yq ". *=d load(\"chains-evm/base/$CHAIN_ID.yaml\")" chains-evm/_root.yaml > project-base.yaml && yq ". *=d load(\"chains-evm/celo/$CHAIN_ID.yaml\")" chains-evm/_root.yaml > project-celo.yaml'
+      - 'CHAIN_ID=centrifuge yarn projectgen && yarn codegen && yarn build:dev'
 
-  subql-installer:
+  subql-config:
     image: node:18-alpine
     profiles:
       - subql
@@ -28,12 +27,14 @@ services:
     volumes:
       - ./centrifuge-subql:/app
     working_dir: /app
+    environment:
+      CHAIN_ID: ${CHAIN_ID}
     command:
       - sh
       - -c
-      - 'yarn install && yarn codegen && yarn build:dev'
+      - 'yarn projectgen'
     depends_on:
-      subql-proj:
+      subql-builder:
         condition: service_completed_successfully
 
   subql-db:
@@ -65,9 +66,9 @@ services:
     depends_on:
       subql-db:
         condition: service_healthy
-      subql-installer:
+      subql-builder:
         condition: service_completed_successfully
-      subql-proj:
+      subql-config:
         condition: service_completed_successfully
     restart: always
     environment:
@@ -98,9 +99,9 @@ services:
     depends_on:
       subql-db:
         condition: service_healthy
-      subql-installer:
+      subql-builder:
         condition: service_completed_successfully
-      subql-proj:
+      subql-config:
         condition: service_completed_successfully
     restart: always
     environment:
@@ -133,9 +134,9 @@ services:
     depends_on:
       subql-db:
         condition: service_healthy
-      subql-installer:
+      subql-builder:
         condition: service_completed_successfully
-      subql-proj:
+      subql-config:
         condition: service_completed_successfully
     restart: always
     environment:
@@ -168,9 +169,9 @@ services:
     depends_on:
       subql-db:
         condition: service_healthy
-      subql-installer:
+      subql-builder:
         condition: service_completed_successfully
-      subql-proj:
+      subql-config:
         condition: service_completed_successfully
     restart: always
     environment:
@@ -206,12 +207,6 @@ services:
     depends_on:
       subql-db:
         condition: service_healthy
-      subql-node-cfg:
-        condition: service_healthy
-      subql-installer:
-        condition: service_completed_successfully
-      subql-proj:
-        condition: service_completed_successfully
     restart: always
     environment:
       DB_USER: ${SUBQL_DB_USER}
