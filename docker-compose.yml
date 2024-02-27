@@ -85,6 +85,7 @@ services:
       - --db-schema=app
       - --disable-historical=true
       - --batchSize=100
+      - --store-cache-async=false
       #- --debug
     healthcheck:
       test: ['CMD', 'curl', '-f', 'http://subql-node-cfg:3000/ready']
@@ -113,7 +114,7 @@ services:
     volumes:
       - ./centrifuge-subql:/app
     command:
-      - -f=/app/project-ethereum.yaml
+      - -f=/app/project-eth.yaml
       - --multi-chain
       - --db-schema=app
       - --disable-historical=true
