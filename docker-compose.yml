@@ -302,3 +302,38 @@ services:
       API_KEY: supersecret
     tty: true # makes the service logs colorful
     command: yarn develop:debug
+
+  subql-node-tinlake:
+    image: onfinality/subql-node-ethereum:latest
+    profiles:
+      - subql
+    depends_on:
+      subql-db:
+        condition: service_healthy
+      subql-builder:
+        condition: service_completed_successfully
+      subql-config:
+        condition: service_completed_successfully
+    restart: always
+    environment:
+      DB_USER: ${SUBQL_DB_USER}
+      DB_PASS: ${SUBQL_DB_PASS}
+      DB_DATABASE: postgres
+      DB_HOST: subql-db
+      DB_PORT: 5432
+    volumes:
+      - ./centrifuge-subql:/app
+    command:
+      - -f=/app/project-tinlake.yaml
+      - --multi-chain
+      - --db-schema=app
+      - --disable-historical=true
+      #- --workers=1
+      - --batch-size=30
+      - --skipTransactions=true
+      #- --debug
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://subql-node-tinlake:3000/ready']
+      interval: 3s
+      timeout: 5s
+      retries: 10
