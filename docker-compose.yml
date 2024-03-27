@@ -68,6 +68,7 @@ services:
     profiles:
       - subql
       - subql-cfg
+      - subql-eth
     depends_on:
       subql-db:
         condition: service_healthy
@@ -86,13 +87,12 @@ services:
       - ./centrifuge-subql:/app
     command:
       - -f=/app/project-centrifuge.yaml
-      #- --multi-chain
+      - --multi-chain
       - --db-schema=app
       - --disable-historical=true
       - --batchSize=100
-      - --store-cache-async=false
       - --unsafe
-      - --debug="SQL"
+      #- --debug="SQL"
     healthcheck:
       test: ['CMD', 'curl', '-f', 'http://subql-node-cfg:3000/ready']
       interval: 3s
