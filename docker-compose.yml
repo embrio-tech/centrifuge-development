@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 
 volumes:
   subqlDb:
@@ -16,10 +16,12 @@ services:
       - ./centrifuge-subql:/app
     working_dir: /app
     entrypoint: []
+    environment:
+      ONFINALITY_API_KEY: ${ONFINALITY_API_KEY}
     command:
       - sh
       - -c
-      - 'CHAIN_ID=centrifuge yarn projectgen && yarn codegen && yarn build:dev'
+      - "CHAIN_ID=centrifuge yarn projectgen && yarn codegen && yarn build:dev"
 
   subql-config:
     image: node:18-alpine
@@ -33,10 +35,11 @@ services:
     working_dir: /app
     environment:
       CHAIN_ID: ${CHAIN_ID}
+      ONFINALITY_API_KEY: ${ONFINALITY_API_KEY}
     command:
       - sh
       - -c
-      - 'yarn projectgen'
+      - "yarn projectgen"
     depends_on:
       subql-builder:
         condition: service_completed_successfully
@@ -58,7 +61,7 @@ services:
       POSTGRES_USER: ${SUBQL_DB_USER}
       POSTGRES_PASSWORD: ${SUBQL_DB_PASS}
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -94,7 +97,7 @@ services:
       - --unsafe
       #- --debug="SQL"
     healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://subql-node-cfg:3000/ready']
+      test: ["CMD", "curl", "-f", "http://subql-node-cfg:3000/ready"]
       interval: 3s
       timeout: 5s
       retries: 10
@@ -121,6 +124,7 @@ services:
     volumes:
       - ./centrifuge-subql:/app
     command:
+      - --timeout=3600
       - -f=/app/project-eth.yaml
       - --multi-chain
       - --db-schema=app
@@ -131,7 +135,7 @@ services:
       - --unsafe
       #- --debug
     healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://subql-node-eth:3000/ready']
+      test: ["CMD", "curl", "-f", "http://subql-node-eth:3000/ready"]
       interval: 3s
       timeout: 5s
       retries: 10
@@ -167,7 +171,7 @@ services:
       - --unsafe
       #- --debug
     healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://subql-node-base:3000/ready']
+      test: ["CMD", "curl", "-f", "http://subql-node-base:3000/ready"]
       interval: 3s
       timeout: 5s
       retries: 10
@@ -203,7 +207,7 @@ services:
       - --unsafe
       #- --debug
     healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://subql-node-celo:3000/ready']
+      test: ["CMD", "curl", "-f", "http://subql-node-celo:3000/ready"]
       interval: 3s
       timeout: 5s
       retries: 10
@@ -279,12 +283,13 @@ services:
     volumes:
       - ./centrifuge-influx:/usr/src/app
       - /usr/src/app/node_modules
-    ports: []
-    #  - 9229:9229
+    user: node:node
+    ports:
+      - 5011:5000
     depends_on:
       - blender-db
     environment:
-      DB_URI: 'mongodb://${BLENDER_DB_USER}:${BLENDER_DB_PASS}@blender-db:27017/blender?authSource=admin'
+      DB_URI: "mongodb://${BLENDER_DB_USER}:${BLENDER_DB_PASS}@blender-db:27017/blender?authSource=admin"
       POOL_ID: ${POOL_ID}
       PROXY_KEYRING_URI: ${PROXY_KEYRING_URI}
       OPERATOR_ADDRESS: ${OPERATOR_ADDRESS}
@@ -305,10 +310,11 @@ services:
     ports:
       - 5010:5000
       - 9229:9229
+    user: node:node
     depends_on:
       - blender-db
     environment:
-      DB_URI: 'mongodb://${BLENDER_DB_USER}:${BLENDER_DB_PASS}@blender-db:27017/blender?authSource=admin'
+      DB_URI: "mongodb://${BLENDER_DB_USER}:${BLENDER_DB_PASS}@blender-db:27017/blender?authSource=admin"
       LOGGER_LEVEL: debug
       API_KEY: supersecret
     tty: true # makes the service logs colorful
