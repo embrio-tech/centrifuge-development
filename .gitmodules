@@ -1,6 +1,6 @@
 [submodule "centrifuge-subql"]
 	path = centrifuge-subql
-	url = git@github.com:embrio-tech/centrifuge-subql.git
+	url = git@github.com:centrifuge/pools-subql.git
 	branch = main
 [submodule "centrifuge-insights"]
 	path = centrifuge-insights
