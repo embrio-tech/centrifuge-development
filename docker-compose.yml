@@ -316,5 +316,7 @@ services:
       DB_URI: "mongodb://${BLENDER_DB_USER}:${BLENDER_DB_PASS}@blender-db:27017/blender?authSource=admin"
       LOGGER_LEVEL: debug
       API_KEY: supersecret
+      # set SUBQL_ENDPOINT url to merge subquery graph into outflux graph
+      # SUBQL_ENDPOINT: "https://api.subquery.network/sq/centrifuge/pools-demo-multichain"
     tty: true # makes the service logs colorful
     command: yarn develop:debug
