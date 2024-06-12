@@ -65,7 +65,7 @@ services:
       retries: 5
 
   subql-node-cfg:
-    image: onfinality/subql-node:latest #v3.9.1
+    image: onfinality/subql-node:latest
     profiles:
       - subql
       - subql-cfg
@@ -93,6 +93,7 @@ services:
       - --disable-historical=true
       - --batchSize=100
       - --unsafe
+      - --workers=0
       #- --debug="SQL"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://subql-node-cfg:3000/ready"]
