@@ -79,6 +79,7 @@ services:
         condition: service_completed_successfully
     restart: always
     environment:
+      TZ: UTC
       DB_USER: ${SUBQL_DB_USER}
       DB_PASS: ${SUBQL_DB_PASS}
       DB_DATABASE: postgres
@@ -115,6 +116,7 @@ services:
         condition: service_completed_successfully
     restart: always
     environment:
+      TZ: UTC
       DB_USER: ${SUBQL_DB_USER}
       DB_PASS: ${SUBQL_DB_PASS}
       DB_DATABASE: postgres
@@ -152,6 +154,7 @@ services:
         condition: service_completed_successfully
     restart: always
     environment:
+      TZ: UTC
       DB_USER: ${SUBQL_DB_USER}
       DB_PASS: ${SUBQL_DB_PASS}
       DB_DATABASE: postgres
@@ -188,6 +191,7 @@ services:
         condition: service_completed_successfully
     restart: always
     environment:
+      TZ: UTC
       DB_USER: ${SUBQL_DB_USER}
       DB_PASS: ${SUBQL_DB_PASS}
       DB_DATABASE: postgres
@@ -224,6 +228,7 @@ services:
         condition: service_healthy
     restart: always
     environment:
+      TZ: UTC
       DB_USER: ${SUBQL_DB_USER}
       DB_PASS: ${SUBQL_DB_PASS}
       DB_DATABASE: postgres
