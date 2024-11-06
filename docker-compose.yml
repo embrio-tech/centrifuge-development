@@ -54,6 +54,7 @@ services:
       - 5432:5432
     volumes:
       - subqlDb:/var/lib/postgresql/data
+      - ./postgres:/docker-entrypoint-initdb.d
     environment:
       POSTGRES_DB: postgres
       POSTGRES_USER: ${SUBQL_DB_USER}
@@ -216,7 +217,7 @@ services:
       retries: 10
 
   subql-query:
-    image: onfinality/subql-query
+    image: onfinality/subql-query:latest
     profiles:
       - subql
       - subql-cfg
@@ -239,6 +240,7 @@ services:
       - --playground
       - --aggregate
       - --indexer=http://subql-node-cfg:3000
+      - --query-limit=1000
 
   insights-client:
     image: centrifuge-insights
