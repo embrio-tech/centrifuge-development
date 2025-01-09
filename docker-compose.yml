@@ -16,6 +16,7 @@ services:
     entrypoint: []
     environment:
       ONFINALITY_API_KEY: ${ONFINALITY_API_KEY}
+      ALCHEMY_API_KEY: ${ALCHEMY_API_KEY}
     command:
       - sh
       - -c
@@ -34,6 +35,7 @@ services:
     environment:
       CHAIN_ID: ${CHAIN_ID}
       ONFINALITY_API_KEY: ${ONFINALITY_API_KEY}
+      ALCHEMY_API_KEY: ${ALCHEMY_API_KEY}
     command:
       - sh
       - -c
@@ -96,6 +98,7 @@ services:
       - --batchSize=100
       - --unsafe
       - --workers=0
+      #- --store-cache-async=false
       #- --debug="SQL"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://subql-node-cfg:3000/ready"]
@@ -134,8 +137,9 @@ services:
       - --workers=0
       - --batch-size=30
       - --skipTransactions=true
+      #- --store-cache-async=false
       - --unsafe
-      #- --debug
+     # - --debug="SQL"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://subql-node-eth:3000/ready"]
       interval: 3s
@@ -171,6 +175,7 @@ services:
       - --workers=0
       - --batch-size=30
       - --skipTransactions=true
+      #- --store-cache-async=false
       - --unsafe
       #- --debug
     healthcheck:
@@ -208,6 +213,7 @@ services:
       - --workers=0
       - --batch-size=30
       - --skipTransactions=true
+      #- --store-cache-async=false
       - --unsafe
       #- --debug
     healthcheck:
