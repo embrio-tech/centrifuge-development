@@ -3,47 +3,6 @@ volumes:
   blenderDb:
 
 services:
-  subql-builder:
-    image: node:18-alpine
-    user: node:node
-    profiles:
-      - subql
-      - subql-cfg
-      - subql-eth
-    volumes:
-      - ./centrifuge-subql:/app
-    working_dir: /app
-    entrypoint: []
-    environment:
-      ONFINALITY_API_KEY: ${ONFINALITY_API_KEY}
-      ALCHEMY_API_KEY: ${ALCHEMY_API_KEY}
-    command:
-      - sh
-      - -c
-      - "CHAIN_ID=centrifuge yarn projectgen && yarn codegen && yarn build:dev"
-
-  subql-config:
-    image: node:18-alpine
-    user: node:node
-    profiles:
-      - subql
-      - subql-cfg
-      - subql-eth
-    volumes:
-      - ./centrifuge-subql:/app
-    working_dir: /app
-    environment:
-      CHAIN_ID: ${CHAIN_ID}
-      ONFINALITY_API_KEY: ${ONFINALITY_API_KEY}
-      ALCHEMY_API_KEY: ${ALCHEMY_API_KEY}
-    command:
-      - sh
-      - -c
-      - "yarn projectgen"
-    depends_on:
-      subql-builder:
-        condition: service_completed_successfully
-
   subql-db:
     build:
       context: ./centrifuge-subql/
@@ -68,7 +27,9 @@ services:
       retries: 5
 
   subql-node-cfg:
-    image: onfinality/subql-node:latest
+    build:
+      context: ./centrifuge-subql/
+      dockerfile: Dockerfile.cfg
     profiles:
       - subql
       - subql-cfg
@@ -76,10 +37,6 @@ services:
     depends_on:
       subql-db:
         condition: service_healthy
-      subql-builder:
-        condition: service_completed_successfully
-      subql-config:
-        condition: service_completed_successfully
     restart: always
     environment:
       TZ: UTC
@@ -88,10 +45,13 @@ services:
       DB_DATABASE: postgres
       DB_HOST: subql-db
       DB_PORT: 5432
+      ONFINALITY_API_KEY: ${ONFINALITY_API_KEY}
+      ALCHEMY_API_KEY: ${ALCHEMY_API_KEY}
+      CHAIN_ID: ${CHAIN_ID}
+      NODE_ID: centrifuge
     volumes:
       - ./centrifuge-subql:/app
     command:
-      - -f=/app/project-centrifuge.yaml
       - --multi-chain
       - --db-schema=app
       - --disable-historical=true
@@ -107,17 +67,15 @@ services:
       retries: 10
 
   subql-node-eth:
-    image: onfinality/subql-node-ethereum:latest
+    build:
+      context: ./centrifuge-subql/
+      dockerfile: Dockerfile.evm
     profiles:
       - subql
       - subql-eth
     depends_on:
       subql-db:
         condition: service_healthy
-      subql-builder:
-        condition: service_completed_successfully
-      subql-config:
-        condition: service_completed_successfully
     restart: always
     environment:
       TZ: UTC
@@ -126,11 +84,14 @@ services:
       DB_DATABASE: postgres
       DB_HOST: subql-db
       DB_PORT: 5432
+      ONFINALITY_API_KEY: ${ONFINALITY_API_KEY}
+      ALCHEMY_API_KEY: ${ALCHEMY_API_KEY}
+      CHAIN_ID: ${CHAIN_ID}
+      NODE_ID: eth
     volumes:
       - ./centrifuge-subql:/app
     command:
       - --timeout=3600
-      - -f=/app/project-eth.yaml
       - --multi-chain
       - --db-schema=app
       - --disable-historical=true
@@ -147,16 +108,14 @@ services:
       retries: 10
 
   subql-node-base:
-    image: onfinality/subql-node-ethereum:latest
+    build:
+      context: ./centrifuge-subql/
+      dockerfile: Dockerfile.evm
     profiles:
       - subql
     depends_on:
       subql-db:
         condition: service_healthy
-      subql-builder:
-        condition: service_completed_successfully
-      subql-config:
-        condition: service_completed_successfully
     restart: always
     environment:
       TZ: UTC
@@ -165,10 +124,13 @@ services:
       DB_DATABASE: postgres
       DB_HOST: subql-db
       DB_PORT: 5432
+      ONFINALITY_API_KEY: ${ONFINALITY_API_KEY}
+      ALCHEMY_API_KEY: ${ALCHEMY_API_KEY}
+      CHAIN_ID: ${CHAIN_ID}
+      NODE_ID: base
     volumes:
       - ./centrifuge-subql:/app
     command:
-      - -f=/app/project-base.yaml
       - --multi-chain
       - --db-schema=app
       - --disable-historical=true
@@ -185,16 +147,14 @@ services:
       retries: 10
 
   subql-node-celo:
-    image: onfinality/subql-node-ethereum:latest
+    build:
+      context: ./centrifuge-subql/
+      dockerfile: Dockerfile.evm
     profiles:
       - none
     depends_on:
       subql-db:
         condition: service_healthy
-      subql-builder:
-        condition: service_completed_successfully
-      subql-config:
-        condition: service_completed_successfully
     restart: always
     environment:
       TZ: UTC
@@ -203,10 +163,13 @@ services:
       DB_DATABASE: postgres
       DB_HOST: subql-db
       DB_PORT: 5432
+      ONFINALITY_API_KEY: ${ONFINALITY_API_KEY}
+      ALCHEMY_API_KEY: ${ALCHEMY_API_KEY}
+      CHAIN_ID: ${CHAIN_ID}
+      NODE_ID: celo
     volumes:
       - ./centrifuge-subql:/app
     command:
-      - -f=/app/project-celo.yaml
       - --multi-chain
       - --db-schema=app
       - --disable-historical=true
@@ -247,6 +210,7 @@ services:
       - --aggregate
       - --indexer=http://subql-node-cfg:3000
       - --query-limit=1000
+      - --subscription
 
   insights-client:
     image: centrifuge-insights

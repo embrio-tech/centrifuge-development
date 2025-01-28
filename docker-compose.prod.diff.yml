@@ -1,0 +1,77 @@
+volumes:
+  subqlDb:
+  blenderDb:
+
+services:
+  subql-db:
+    restart: always
+
+  subql-node-cfg:
+    build: !reset
+    image: ghcr.io/centrifuge/pools-subql-cfg:latest
+    depends_on:
+      subql-db:
+        condition: service_healthy
+    restart: always
+
+  subql-node-eth:
+    build: !reset
+    image: ghcr.io/centrifuge/pools-subql-evm:latest
+    depends_on:
+      subql-db:
+        condition: service_healthy
+    restart: always
+    volumes: []
+
+  subql-node-base:
+    build: !reset
+    image: ghcr.io/centrifuge/pools-subql-evm:latest
+    profiles:
+      - subql
+    depends_on:
+      subql-db:
+        condition: service_healthy
+    restart: always
+    volumes: []
+
+  subql-node-celo:
+    build: !reset
+    image: ghcr.io/centrifuge/pools-subql-evm:latest
+    profiles:
+      - none
+    depends_on:
+      subql-db:
+        condition: service_healthy
+    restart: always
+    volumes: []
+
+  subql-query:
+    image: onfinality/subql-query:latest
+    profiles:
+      - subql
+      - subql-cfg
+      - subql-eth
+    depends_on:
+      subql-db:
+        condition: service_healthy
+    restart: always
+    ports: !reset
+    labels:
+          - "traefik.enable=true"
+          - "traefik.http.routers.subql.rule=Host(`subql.embrio.tech`) || Host(`api.centrifuge.io`)"
+          - "traefik.http.routers.subql.entrypoints=websecure"
+          - "traefik.http.routers.subql.tls.certresolver=myresolver"
+          - "traefik.http.services.subql.loadbalancer.server.port=3000"
+          - "traefik.docker.network=web"
+          - "traefik.http.middlewares.corsheaders.headers.accesscontrolallowheaders=*"
+          - "traefik.http.middlewares.corsheaders.headers.accesscontrolalloworiginlist=*"
+          - "traefik.http.middlewares.corsheaders.headers.accesscontrolallowmethods=GET,OPTIONS,POST"
+          - "traefik.http.routers.subql.middlewares=corsheaders"
+#     networks:
+#       - default
+#       - web
+
+# networks:
+#   default:
+#   web:
+#     external: true
